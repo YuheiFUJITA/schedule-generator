@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<base target="_top">
+	<link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+</head>
+
+<body>
+	<div id="app">
+		<div>
+			<h2>設定</h2>
+			<button class="mdc-button" @click="addSheet">
+					<span class="mdc-button__label">シート作成作成</span>
+				</button><br>
+			<button class="mdc-button" @click="updateCalendarList">
+					<span class="mdc-button__label">カレンダー一覧更新</span>
+				</button><br>
+			<button class="mdc-button" @click="generateEvents">
+					<span class="mdc-button__label">予定登録</span>
+				</button>
+		</div>
+	</div>
+	<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script>
+		window.mdc.autoInit();
+		var app = new Vue({
+			el: '#app',
+			data: {
+				calendars: null,
+				selectedCal: null,
+			},
+			mounted: function () {
+				google.script.run.withSuccessHandler(function (cals) {
+					this.calendars = cals;
+				}.bind(this)).getCalendarList();
+				google.script.run.withSuccessHandler(function (id) {
+					this.selectedCal = id;
+				}.bind(this)).getSelectedCalId();
+			},
+			methods: {
+				addSheet: function () {
+					google.script.run
+						.withSuccessHandler(function () {
+							console.log('成功')
+						})
+						.withFailureHandler(function () {
+							console.log('失敗')
+						})
+						.addSheet()
+				},
+				updateCalendarList: function() {
+					google.script.run
+						.withSuccessHandler(function () { })
+						.withFailureHandler(function () { })
+						.updateCalendarList()
+				},
+				generateEvents: function() {
+					google.script.run
+						.withSuccessHandler(function () { })
+						.withFailureHandler(function () { })
+						.generateEvents()
+				}
+			},
+		})
+	</script>
+</body>
+
+</html>

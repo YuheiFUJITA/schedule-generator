@@ -39,11 +39,12 @@ function showSidebar() {
 function addSheet() {
 	//ScriptPropertiesにテンプレートのスプレッドシートのIDが保存してあるので、それを取得
 	var ssId = PropertiesService.getScriptProperties().getProperty('template');
-	var ss = SpreadsheetApp.getActiveRangeList();
+	var ss = SpreadsheetApp.getActiveSpreadsheet();
 	//現在のスプレッドシートにテンプレートをコピー
-	var sheet = SpreadsheetApp.openById(ssId).getSheetByName('list').copyTo(ss);
-	sheet.setName('ScheduleList');
+	var sheet = SpreadsheetApp.openById(ssId).getSheetByName('template').copyTo(ss);
 	sheet.activate();
+	updateCalendarList();
+	return sheet.getName();
 }
 
 //カレンダー一覧を取得
@@ -67,7 +68,7 @@ function updateCalendarList() {
 	var range = sheet.getRange(2, 3, sheet.getMaxRows() - 1, 1);
 	var calendarNames = Object.keys(calendarList);
 	// カレンダー選択列に入力規則としてカレンダー名を指定
-	var rule = SpreadsheetApp.newDataValidation().requireValueInList(calendarNames, true).build();
+	var rule = SpreadsheetApp.newDataValidation().requireValueInList(calendarNames, true).setAllowInvalid(false).build();
 	range.setDataValidation(rule);
 
 	return calendarList;
@@ -88,6 +89,7 @@ function generateEvents() {
 	var checkBox = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1);
 	var results = checkBox.getValues();
 
+	var result = 0;
 	var calendarList = updateCalendarList();
 	for (var i in values) {
 		if (results[i][0] == false) {
@@ -104,12 +106,14 @@ function generateEvents() {
 			);
 			if (event != null) {
 				results[i][0] = true;
+				result.success++;
 			} else {
 				results[i][0] = false;
 			}
 		}
 	}
 	checkBox.setValues(results);
+	return result;
 }
 
 function generateEvent(calendar, title, start, end, allDay, description, loop, loopEnd) {
@@ -158,4 +162,12 @@ function buildRecurrenceRule(loop, end) {
 	}
 	recurrence.until(end);
 	return recurrence;
+}
+
+function showModal(title, body, width, height) {
+	var htmlOutput = HtmlService
+		.createHtmlOutput(body)
+		.setWidth(width)
+		.setHeight(height);
+	SpreadsheetApp.getUi().showModalDialog(htmlOutput, title);
 }

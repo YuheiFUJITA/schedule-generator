@@ -4,20 +4,37 @@
 <head>
 	<base target="_top">
 	<link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+	<style>
+			:root {
+				--mdc-theme-primary: #188038;
+			}
+		</style>
 </head>
 
 <body>
 	<div id="app">
 		<div>
-			<h2>設定</h2>
-			<button class="mdc-button" @click="addSheet">
-				<span class="mdc-button__label">シート作成</span>
-			</button><br>
-			<button class="mdc-button" @click="updateCalendarList">
-				<span class="mdc-button__label">カレンダー一覧更新</span>
-			</button><br>
-			<button class="mdc-button" @click="generateEvents">
-				<span class="mdc-button__label">予定登録</span>
+			<h2>シートの追加</h2>
+			<p>入力用シートを追加します。</p>
+			<button class="mdc-button mdc-button--unelevated" @click="addSheet">
+				<span class="mdc-button__label">追加</span>
+			</button>
+		</div>
+		<div>
+			<h2>カレンダー情報更新</h2>
+			<p>
+				カレンダー一覧情報を更新します。<br>
+				カレンダーを新規作成したときなどに実行してください。
+			</p>
+			<button class="mdc-button mdc-button--unelevated" @click="updateCalendarList">
+				<span class="mdc-button__label">更新</span>
+			</button>
+		</div>
+		<div>
+			<h2>予定一括登録</h2>
+			<p>入力した予定を一括登録します。</p>
+			<button class="mdc-button mdc-button--unelevated" @click="generateEvents">
+				<span class="mdc-button__label">登録</span>
 			</button>
 		</div>
 	</div>
@@ -69,7 +86,7 @@
 								'<p>カレンダー一覧の更新が完了しました</p>',
 								300,
 								100
-							);	
+							);
 						})
 						.withFailureHandler(function () {
 							google.script.run.showModal(

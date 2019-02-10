@@ -27,7 +27,7 @@ function onInstall(e) {
 
 function showSidebar() {
 	Logger.log("showSidebar");
-	var ui = HtmlService.createHtmlOutputFromFile('sidebar').setTitle('管理画面');
+	var ui = HtmlService.createHtmlOutputFromFile('sidebar').setTitle('ScheduleGenerator');
 	SpreadsheetApp.getUi().showSidebar(ui);
 }
 
@@ -121,26 +121,30 @@ function generateEvent(calendar, title, start, end, allDay, description, loop, l
 	if (calendar == '' || title == '' || start == '' || end == '') {
 		return null;
 	}
-	//var calendar = CalendarApp.getDefaultCalendar();
-	//繰り返しの予定かどうかで分岐
-	if (loop == '') {
-		if (allDay == false) {
-			//繰り返しなし・終日でない
-			return calendar.createEvent(title, start, end, { 'description': description });
-		} else if (allDay == true) {
-			//繰り返しなし・終日
-			return calendar.createAllDayEvent(title, start, end, { 'description': description });
+	try {
+		//var calendar = CalendarApp.getDefaultCalendar();
+		//繰り返しの予定かどうかで分岐
+		if (loop == '') {
+			if (allDay == false) {
+				//繰り返しなし・終日でない
+				return calendar.createEvent(title, start, end, { 'description': description });
+			} else if (allDay == true) {
+				//繰り返しなし・終日
+				return calendar.createAllDayEvent(title, start, end, { 'description': description });
+			}
+		} else if (loop != '') {
+			//繰り返しルールの作成
+			var recurrence = buildRecurrenceRule(loop, loopEnd);
+			if (allDay == false) {
+				//繰り返し・終日でない
+				return calendar.createEventSeries(title, start, end, recurrence, { 'description': description });
+			} else if (allDay == true) {
+				//繰り返し・終日
+				return calendar.createAllDayEventSeries(title, start, recurrence, { 'description': description });
+			}
 		}
-	} else if (loop != '') {
-		//繰り返しルールの作成
-		var recurrence = buildRecurrenceRule(loop, loopEnd);
-		if (allDay == false) {
-			//繰り返し・終日でない
-			return calendar.createEventSeries(title, start, end, recurrence, { 'description': description });
-		} else if (allDay == true) {
-			//繰り返し・終日
-			return calendar.createAllDayEventSeries(title, start, recurrence, { 'description': description });
-		}
+	} catch (error) {
+		return null;
 	}
 }
 

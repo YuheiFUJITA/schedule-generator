@@ -164,7 +164,9 @@ function buildRecurrenceRule(loop, end) {
 			recurrence = recurrence.addYearlyRule();
 			break;
 	}
-	recurrence.until(end);
+	if (end != '') {
+		recurrence.until(end);
+	}
 	return recurrence;
 }
 
